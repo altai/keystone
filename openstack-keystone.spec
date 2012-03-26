@@ -3,31 +3,35 @@
 
 %global with_doc 1
 %global prj keystone
+%global short_name openstack-keystone
+%global os_release essex
 %define mod_name keystone
 %define py_puresitedir  %{python_sitelib}
 
-Name:           openstack-%{prj}
+Name:           openstack-%{prj}-%{os_release}
 Epoch:          1
-Release:        3
-Version:        2011.3
+Release:        1 
+Version:        2012.1
 Url:            http://www.openstack.org
 Summary:        Python bindings to the OS API
 License:        Apache 2.0
 Vendor:         Grid Dynamics Consulting Services, Inc.
 Group:          Applications/System
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{name}.init
+Source1:        %{short_name}.init
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel python-setuptools
 %if 0%{?with_doc}
 BuildRequires:  python-sphinx >= 0.6.0 make
 %endif
 BuildArch:      noarch
+
+Conflicts:      %{short_name}
 Requires:       start-stop-daemon
-Requires:       python-keystone = %{epoch}:%{version}-%{release}
+Requires:       python-keystone-%{os_release} = %{epoch}:%{version}-%{release}
 
 %description
-Authentication service - proposed for OpenStack
+Authentication service - proposed for OpenStack.
 
 
 %if 0%{?with_doc}
@@ -43,7 +47,7 @@ Documentation for %{name}.
 
 %endif
 
-%package -n     python-keystone
+%package -n     python-keystone-%{os_release}
 Summary:        Keystone Python libraries
 Group:          Development/Languages/Python
 
@@ -57,16 +61,15 @@ Requires:       python-paste-deploy
 Requires:       start-stop-daemon 
 Requires:       python-webob 
 Requires:       python-setuptools 
-Requires:       python-passlib 
-Requires:       python-keystone
+Requires:       python-passlib
+Requires:       python-sqlalchemy-migrate
+Requires:       python-keystone-%{os_release}
 
-%description -n  python-keystone
+%description -n  python-keystone-%{os_release}
 This package contains the %{name} Python library.
 
 %prep
 %setup -q -n %{name}-%{version}
-sed -i 's|sqlite:///keystone|sqlite:////var/lib/keystone/keystone|' etc/keystone.conf
-sed -i "s|'tenant_name'|'tenantName'|" keystone/middleware/auth_token.py
 
 
 %build
@@ -77,22 +80,30 @@ python setup.py build
 %__rm -rf %{buildroot}
 
 %if 0%{?with_doc}
-%__make -C doc/ html PYTHONPATH=%{_builddir}/%{name}-%{version}
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+
+pushd doc
+sphinx-build -b html source build/html
+popd
+
+# Fix hidden-file-or-dir warnings
+rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
 %endif
+
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/usr/bin/keystone{,-combined}
+#mv %{buildroot}/usr/bin/keystone{,-combined}
 
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{prj}
 install -m 644 etc/* %{buildroot}%{_sysconfdir}/%{prj}
-install -m 644 examples/paste/nova-api-paste.ini %{buildroot}%{_sysconfdir}/%{prj}
+#install -m 644 examples/paste/nova-api-paste.ini %{buildroot}%{_sysconfdir}/%{prj}
 
-install -d -m 755 %{buildroot}%{_sharedstatedir}/keystone
+install -d -m 755 %{buildroot}%{_sharedstatedir}/%{prj}
 install -d -m 755 %{buildroot}%{_localstatedir}/log/%{prj}
 install -d -m 755 %{buildroot}%{_localstatedir}/run/%{prj}
 
 install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/%{prj}
 
-%__rm -rf %{buildroot}%{py_puresitedir}/{doc,examples,tools}
+%__rm -rf %{buildroot}%{py_puresitedir}/{doc,tools}
 
 
 %clean
@@ -102,7 +113,7 @@ install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/%{prj}
 %pre
 getent passwd keystone >/dev/null || \
 useradd -r -g nobody -G nobody -d %{_sharedstatedir}/%{prj} -s /sbin/nologin \
--c "OpenStack Keystone Daemon" keystone
+-c "OpenStack Keystone Daemon" %{prj}
 exit 0
 
 
@@ -115,9 +126,9 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc README.md HACKING LICENSE
+%doc README.rst HACKING.rst LICENSE
 %{_usr}/bin/*
-%config(noreplace) %{_sysconfdir}/keystone
+%config(noreplace) %{_sysconfdir}/%{prj}
 %dir %attr(0755, keystone, nobody) %{_sharedstatedir}/%{prj}
 %dir %attr(0755, keystone, nobody) %{_localstatedir}/log/%{prj}
 %dir %attr(0755, keystone, nobody) %{_localstatedir}/run/%{prj}
@@ -126,15 +137,18 @@ fi
 %if 0%{?with_doc}
 %files doc
 %defattr(-,root,root,-)
-%doc examples doc
+%doc doc
 %endif
 
-%files -n python-keystone
+%files -n python-keystone-%{os_release}
 %defattr(-,root,root,-)
 %doc LICENSE
 %{py_puresitedir}/%{mod_name}*
 
 
 %changelog
+* Mon Mar  26 2012 Pavel Shkitin <pshkitin@griddynamics.com> - 2012.1
+- Ported keystone on the essex-rc1 release
+
 * Thu Mar  6 2012 Marco Sinhoreli <marco.sinhoreli@corp.globo.com> - 2011.3
 - Separated keystone libraries of the others
