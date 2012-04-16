@@ -57,7 +57,7 @@ Requires:       python-paste
 Requires:       python-sqlalchemy 
 Requires:       python-routes 
 Requires:       python-httplib2 
-Requires:       python-paste-deploy 
+Requires:       python-paste-deploy >= 1.5.0
 Requires:       start-stop-daemon 
 Requires:       python-webob 
 Requires:       python-setuptools 
