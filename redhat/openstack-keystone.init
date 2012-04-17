@@ -37,7 +37,7 @@ flgfile=/etc/keystone/keystone.conf
 logdir=/var/log/keystone
 pidfile=/var/run/keystone/keystone.pid
 lckfile=/var/lock/subsys/openstack-keystone
-binfile=/usr/bin/keystone-combined
+binfile=/usr/bin/keystone-all
 
 start() {
 	if [ -f "$pidfile" ]; then

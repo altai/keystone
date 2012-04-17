@@ -19,6 +19,8 @@ Vendor:         Grid Dynamics Consulting Services, Inc.
 Group:          Applications/System
 Source0:        %{name}-%{version}.tar.gz
 Source1:        %{short_name}.init
+
+
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel python-setuptools
 %if 0%{?with_doc}
