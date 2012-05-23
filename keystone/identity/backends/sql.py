@@ -22,6 +22,7 @@ from keystone import exception
 from keystone.common import sql
 from keystone.common import utils
 from keystone.common.sql import migration
+from keystone.contrib.ec2.backends.sql import Ec2Credential
 
 
 def _filter_user(user_ref):
@@ -422,3 +423,10 @@ class Identity(sql.Base, identity.Driver):
         role_ref = session.query(Role).filter_by(id=role_id).first()
         with session.begin():
             session.delete(role_ref)
+
+    def create_ec2_credentials(self, cred):
+        session = self.get_session()
+        with session.begin():
+            session.add(Ec2Credential(**cred))
+            session.flush()
+        return cred
