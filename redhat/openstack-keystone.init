@@ -40,17 +40,6 @@ lckfile=/var/lock/subsys/openstack-keystone
 binfile=/usr/bin/keystone-all
 
 start() {
-	if [ -f "$pidfile" ]; then
-		pid=`cat $pidfile`
-		checkpid $pid
-		r=$?
-		if [ "$r" -eq 0 ]; then
-			cmd=$(basename $binfile)
-			echo -n "$cmd is already running (pid $pid)"; passed
-			echo
-			exit 0
-		fi
-	fi
 	echo -n "Starting $prog: "
 	cd /var/lib/keystone
 	/sbin/start-stop-daemon --start -b -c keystone:nobody --make-pidfile --pidfile $pidfile  --exec $binfile -- --config-file=$flgfile --log-dir=$logdir
