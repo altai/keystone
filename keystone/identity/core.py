@@ -381,6 +381,15 @@ class UserController(wsgi.Application):
         user_refs = self.identity_api.list_users(context)
         return {'users': user_refs}
 
+    def get_user_roles(self, context, user_id):
+        user = self.identity_api.get_user(context, user_id)
+        if user is None:
+            raise exception.UserNotFound(user_id=user_id)
+
+        roles = self.identity_api.get_roles_for_user(
+                context, user_id)
+        return roles
+
     # CRUD extension
     def create_user(self, context, user):
         user = self._normalize_dict(user)

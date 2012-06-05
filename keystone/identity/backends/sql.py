@@ -260,6 +260,22 @@ class Identity(sql.Base, identity.Driver):
                           .all()
         return [x.tenant_id for x in membership_refs]
 
+    def get_roles_for_user(self, user_id):
+        roles = []
+        for tenant in elf.get_tenants_for_user(user_id):
+            tenant_data = self.get_tenant(tenant)
+            metadata_ref = self.get_metadata(user_id, tenant)
+            if not metadata_ref:
+                continue
+            for role in metadata_ref.get('roles', []):
+                role_data = self.get_role(role)
+                role_dict = {'role': {'id': role_data['id'],
+                                      'name': role_data['name']},
+                             'tenant': {'id': tenant_data['id'],
+                                        'name': tenant_data['name']}}
+                roles.append(role_dict)
+        return {'roles' : roles}
+
     def get_roles_for_user_and_tenant(self, user_id, tenant_id):
         metadata_ref = self.get_metadata(user_id, tenant_id)
         if not metadata_ref:
