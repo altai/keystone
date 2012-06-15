@@ -262,7 +262,7 @@ class Identity(sql.Base, identity.Driver):
 
     def get_roles_for_user(self, user_id):
         roles = []
-        for tenant in elf.get_tenants_for_user(user_id):
+        for tenant in self.get_tenants_for_user(user_id):
             tenant_data = self.get_tenant(tenant)
             metadata_ref = self.get_metadata(user_id, tenant)
             if not metadata_ref:
