@@ -13,7 +13,7 @@ Epoch:          1
 Release:        1 
 Version:        2012.1
 Url:            http://www.openstack.org
-Summary:        Python bindings to the OS API
+Summary:        Openstack Identity Service ESSEX
 License:        Apache 2.0
 Vendor:         Grid Dynamics Consulting Services, Inc.
 Group:          Applications/System
