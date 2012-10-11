@@ -18,8 +18,6 @@ License:        Apache 2.0
 Vendor:         Grid Dynamics Consulting Services, Inc.
 Group:          Applications/System
 Source0:        %{name}-%{version}.tar.gz
-Source1:        %{short_name}.init
-
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  python-devel python-setuptools
@@ -103,7 +101,7 @@ install -d -m 755 %{buildroot}%{_sharedstatedir}/%{prj}
 install -d -m 755 %{buildroot}%{_localstatedir}/log/%{prj}
 install -d -m 755 %{buildroot}%{_localstatedir}/run/%{prj}
 
-install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/%{prj}
+install -p -D -m 755 redhat/keystone.init %{buildroot}%{_initrddir}/keystone
 
 %__rm -rf %{buildroot}%{py_puresitedir}/{doc,tools}
 
