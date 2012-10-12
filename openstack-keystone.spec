@@ -54,15 +54,15 @@ Group:          Development/Languages/Python
 Requires:       python-eventlet 
 Requires:       python-lxml 
 Requires:       python-paste 
-Requires:       python-sqlalchemy 
-Requires:       python-routes 
+Requires:       python-sqlalchemy0.7
+Requires:       python-routes1.12
 Requires:       python-httplib2 
 Requires:       python-paste-deploy >= 1.5.0
 Requires:       start-stop-daemon 
-Requires:       python-webob 
+Requires:       python-webob1.0
 Requires:       python-setuptools 
 Requires:       python-passlib
-Requires:       python-sqlalchemy-migrate
+Requires:       python-migrate
 Requires:       python-keystone-%{os_release}
 
 %description -n  python-keystone-%{os_release}
