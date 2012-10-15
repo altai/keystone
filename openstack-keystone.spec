@@ -3,70 +3,84 @@
 
 %global with_doc 0
 %global prj keystone
-%global short_name openstack-keystone
-%global os_release essex
 %define mod_name keystone
 %define py_puresitedir  %{python_sitelib}
 
-Name:           openstack-%{prj}-%{os_release}
+Name:           openstack-keystone
 Epoch:          1
-Release:        1 
 Version:        2012.1
+Release:        1
 Url:            http://www.openstack.org
-Summary:        Openstack Identity Service ESSEX
+Summary:        Openstack Identity Service
 License:        Apache 2.0
 Vendor:         Grid Dynamics Consulting Services, Inc.
 Group:          Applications/System
-Source0:        %{name}-%{version}.tar.gz
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  python-devel python-setuptools
-%if 0%{?with_doc}
-BuildRequires:  python-sphinx >= 0.6.0 make
-%endif
-BuildArch:      noarch
+Source0:          %{name}-%{version}.tar.gz
 
-Conflicts:      %{short_name}
-Requires:       start-stop-daemon
-Requires:       python-keystone-%{os_release} = %{epoch}:%{version}-%{release}
+BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}
+
+BuildArch:        noarch
+BuildRequires:    python-devel
+BuildRequires:    python-setuptools
+BuildRequires:    intltool
+
+Requires(post):   chkconfig
+Requires(postun): initscripts
+Requires(preun):  chkconfig
+Requires(pre):    shadow-utils
+Requires:         python-%{prj} = %{epoch}:%{version}-%{release}
+Requires:         start-stop-daemon
+
+Obsoletes:        %{name}-essex
 
 %description
-Authentication service - proposed for OpenStack.
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains the Keystone daemon.
 
 
 %if 0%{?with_doc}
 
 %package doc
-Summary:        Documentation for %{name}
-Group:          Documentation
-Requires:       %{name} = %{epoch}:%{version}-%{release}
-
+Summary:          Documentation for %{name}
+Group:            Documentation
+Requires:         %{name} = %{epoch}:%{version}-%{release}
+Obsoletes:        %{name}-essex-doc
 
 %description doc
-Documentation for %{name}.
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains documentation for Keystone.
 
 %endif
 
-%package -n     python-keystone-%{os_release}
+
+%package -n     python-keystone
 Summary:        Keystone Python libraries
 Group:          Development/Languages/Python
 
-Requires:       python-eventlet 
-Requires:       python-lxml 
-Requires:       python-paste 
-Requires:       python-sqlalchemy0.7
-Requires:       python-routes1.12
-Requires:       python-httplib2 
-Requires:       python-paste-deploy >= 1.5.0
-Requires:       start-stop-daemon 
-Requires:       python-webob1.0
-Requires:       python-setuptools 
-Requires:       python-passlib
-Requires:       python-migrate
-Requires:       python-keystone-%{os_release}
+Requires:         PyPAM
+Requires:         python-webob==1.0.8
+Requires:         python-eventlet
+Requires:         python-greenlet
+Requires:         python-paste-deploy
+Requires:         python-paste
+Requires:         python-routes
+Requires:         python-sqlalchemy
+Requires:         python-migrate
+Requires:         python-passlib
+Requires:         python-lxml
 
-%description -n  python-keystone-%{os_release}
-This package contains the %{name} Python library.
+Obsoletes:        python-keystone-essex
+
+%description -n  python-keystone
+Keystone is a Python implementation of the OpenStack
+(http://www.openstack.org) identity service API.
+
+This package contains the Keystone Python library.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -140,13 +154,16 @@ fi
 %doc doc
 %endif
 
-%files -n python-keystone-%{os_release}
+%files -n python-keystone
 %defattr(-,root,root,-)
 %doc LICENSE
 %{py_puresitedir}/%{mod_name}*
 
 
 %changelog
+* Mon Oct 15 2012 Alessio Ababilov <aababilov@griddynamics.com> - 2011.3
+- Cleanup the spec
+
 * Mon Mar  26 2012 Pavel Shkitin <pshkitin@griddynamics.com> - 2012.1
 - Ported keystone on the essex-rc1 release
 
