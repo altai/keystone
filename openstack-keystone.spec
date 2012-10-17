@@ -63,7 +63,7 @@ Summary:        Keystone Python libraries
 Group:          Development/Languages/Python
 
 Requires:         PyPAM
-Requires:         python-webob==1.0.8
+Requires:         python-webob == 1.0.8
 Requires:         python-eventlet
 Requires:         python-greenlet
 Requires:         python-paste-deploy
