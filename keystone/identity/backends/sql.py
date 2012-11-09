@@ -404,6 +404,9 @@ class Identity(sql.Base, identity.Driver):
                 for metadata_ref in metadata_refs:
                     session.delete(metadata_ref)
 
+            # flush session to force children tables to be cleaned before parent
+            session.flush()
+
             session.delete(tenant_ref)
             session.flush()
 
