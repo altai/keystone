@@ -316,8 +316,9 @@ class TokenController(wsgi.Application):
 
             tenants = self.identity_api.get_tenants_for_user(context,
                                                              user_ref['id'])
-            if tenant_id:
-                assert tenant_id in tenants
+            if tenant_id and tenant_id not in tenants:
+                 raise exception.Forbidden(
+                     message='You have no access to this tenant')
 
             tenant_ref = self.identity_api.get_tenant(context=context,
                                                       tenant_id=tenant_id)
