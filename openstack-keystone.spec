@@ -1,7 +1,6 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
-%global with_doc 0
 %global prj keystone
 %define mod_name keystone
 %define py_puresitedir  %{python_sitelib}
@@ -46,6 +45,7 @@ This package contains the Keystone daemon.
 %package doc
 Summary:          Documentation for %{name}
 Group:            Documentation
+BuildRequires:    python-sphinx10
 Requires:         %{name} = %{epoch}:%{version}-%{release}
 Obsoletes:        %{name}-essex-doc
 
@@ -94,14 +94,10 @@ python setup.py build
 %__rm -rf %{buildroot}
 
 %if 0%{?with_doc}
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
-
-pushd doc
-sphinx-build -b html source build/html
-popd
+make -C doc html PYTHONPATH=%{buildroot}%{python_sitelib} SPHINXBUILD=sphinx-1.0-build SPHINXAPIDOC=true
 
 # Fix hidden-file-or-dir warnings
-rm -fr doc/build/html/.doctrees doc/build/html/.buildinfo
+rm -fr doc/build/html/.buildinfo
 %endif
 
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
@@ -140,7 +136,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc README.rst HACKING.rst LICENSE
+%doc README* LICENSE HACKING*
 %{_usr}/bin/*
 %config(noreplace) %{_sysconfdir}/%{prj}
 %dir %attr(0755, keystone, nobody) %{_sharedstatedir}/%{prj}
@@ -151,7 +147,7 @@ fi
 %if 0%{?with_doc}
 %files doc
 %defattr(-,root,root,-)
-%doc doc
+%doc doc/build/html
 %endif
 
 %files -n python-keystone
